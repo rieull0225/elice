@@ -16,10 +16,11 @@ class CourseViewModel with ChangeNotifier {
   Future init() async {
     recommendCourse = await courseProvider.getRecommendCourse();
     freeCourse = await courseProvider.getFreeCourse();
+    notifyListeners();
   }
 
-  late List recommendCourse;
-  late List freeCourse;
+  late List recommendCourse = [];
+  late List freeCourse = [];
 
   int _index = 0;
 
@@ -115,94 +116,102 @@ class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
 
   @override
   Widget build(BuildContext context) {
-    int maxRecNum = vm(context).recommendCourse.length > 10
-        ? 10
-        : vm(context).recommendCourse.length;
-    int maxFreeNum =
-        vm(context).freeCourse.length > 10 ? 10 : vm(context).freeCourse.length;
     return Selector<CourseViewModel, List>(
-        selector: (p0, p1) => p1.recommendCourse,
+        selector: (p0, p1) => p1.freeCourse,
         builder: (context, value, child) {
-          return Column(
-            children: [
-              const SizedBox(height: 11),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
-                child: Row(
+          int maxRecNum = vm(context).recommendCourse.length > 10
+              ? 10
+              : vm(context).recommendCourse.length;
+          int maxFreeNum = vm(context).freeCourse.length > 10
+              ? 10
+              : vm(context).freeCourse.length;
+          return value.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
                   children: [
-                    Text(
-                      '추천 과목',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
+                    const SizedBox(height: 11),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 11, horizontal: 16),
+                      child: Row(
+                        children: [
+                          const Text(
+                            '추천 과목',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const Spacer(),
+                          InkWell(
+                            onTap: () {},
+                            child: const Text(
+                              '전체 보기',
+                              style: TextStyle(
+                                  color: Color(0xff564EA9),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          )
+                        ],
                       ),
                     ),
-                    Spacer(),
-                    InkWell(
-                      onTap: () {},
-                      child: Text(
-                        '전체 보기',
-                        style: TextStyle(
-                            color: Color(0xff564EA9),
-                            fontSize: 10,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 200,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    for (int i = 0; i < maxRecNum; ++i)
-                      _buildCourseCard(vm(context).recommendCourse[i]),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
-                child: Row(
-                  children: [
-                    const Text(
-                      '무료 과목',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
+                    SizedBox(
+                      height: 200,
+                      child: Selector<CourseViewModel, List>(
+                          selector: (p0, p1) => p1.recommendCourse,
+                          builder: (context, value, child) {
+                            return ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: [
+                                for (int i = 0; i < maxRecNum; ++i)
+                                  _buildCourseCard(
+                                      vm(context).recommendCourse[i]),
+                              ],
+                            );
+                          }),
+                    ),
+                    const SizedBox(height: 24),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 11, horizontal: 16),
+                      child: Row(
+                        children: [
+                          const Text(
+                            '무료 과목',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const Spacer(),
+                          InkWell(
+                            onTap: () {},
+                            child: const Text(
+                              '전체 보기',
+                              style: TextStyle(
+                                  color: Color(0xff564EA9),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          )
+                        ],
                       ),
                     ),
-                    const Spacer(),
-                    InkWell(
-                      onTap: () {},
-                      child: const Text(
-                        '전체 보기',
-                        style: TextStyle(
-                            color: Color(0xff564EA9),
-                            fontSize: 10,
-                            fontWeight: FontWeight.w400),
+                    SizedBox(
+                      height: 200,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          for (int i = 0; i < maxFreeNum; ++i)
+                            _buildCourseCard(vm(context).freeCourse[i]),
+                        ],
                       ),
-                    )
+                    ),
                   ],
-                ),
-              ),
-              SizedBox(
-                height: 200,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    for (int i = 0; i < maxFreeNum; ++i)
-                      _buildCourseCard(vm(context).freeCourse[i]),
-                  ],
-                ),
-              ),
-            ],
-          );
+                );
         });
   }
 
@@ -247,7 +256,7 @@ class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w700),
@@ -273,7 +282,7 @@ class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
                   children: [
                     Text(
                       teacher.isEmpty ? '선생님 미등록' : teacher[0]['fullname'],
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Color(0xff797a7b),
                           fontSize: 12,
                           fontWeight: FontWeight.w400),

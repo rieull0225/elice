@@ -13,7 +13,6 @@ class CourseProvider {
         .get(Uri.parse(baseUrl), headers: {"Accept": "application/json"});
     if (response.statusCode == 200) {
       course = jsonDecode(response.body)['courses'];
-      print('Recommend : ${course}');
     }
     return course;
   }
@@ -27,7 +26,6 @@ class CourseProvider {
         .get(Uri.parse(baseUrl), headers: {"Accept": "application/json"});
     if (response.statusCode == 200) {
       course = jsonDecode(response.body)['courses'];
-      print('free : ${course}');
     }
     return course;
   }
