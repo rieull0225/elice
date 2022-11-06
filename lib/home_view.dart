@@ -1,9 +1,10 @@
 import 'package:elice/base_widget.dart';
 import 'package:elice/course_provider.dart';
+import 'package:elice/course_view.dart';
 import 'package:elice/qr_view.dart';
-import 'package:elice/viewmodel_provider_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class CourseViewModel with ChangeNotifier {
@@ -38,7 +39,7 @@ class CourseViewModel with ChangeNotifier {
 
   List<Widget> bodyContent = [
     const CourseView(),
-    const QrView(),
+    QrView(),
   ];
 }
 
@@ -54,7 +55,17 @@ class HomeView extends BaseView<CourseViewModel> {
       foregroundColor: Colors.white,
       backgroundColor: Colors.white,
       elevation: 0,
-      title: SizedBox(width: 108, child: Image.asset('asset/image/logo.png')),
+      title: Selector<CourseViewModel, int>(
+          selector: (p0, p1) => p1.index,
+          builder: (context, value, child) {
+            return value == 0
+                ? SizedBox(
+                    width: 108, child: Image.asset('asset/image/logo.png'))
+                : Text(
+                    'QR',
+                    style: TextStyle(color: Colors.black),
+                  );
+          }),
       actions: [
         IconButton(
             onPressed: () {},
@@ -99,7 +110,10 @@ class HomeView extends BaseView<CourseViewModel> {
                 ),
               ],
               currentIndex: vm(context).index,
-              onTap: (value) => vm(context).tapIndex(value),
+              onTap: (value) {
+                vm(context).tapIndex(value);
+                permission();
+              },
               selectedItemColor: const Color(0xff524AA1),
               unselectedItemColor: const Color(0xff8d8a8a),
               selectedIconTheme: const IconThemeData(color: Color(0xff524AA1)),
@@ -109,208 +123,15 @@ class HomeView extends BaseView<CourseViewModel> {
           );
         });
   }
-}
 
-class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
-  const CourseView({Key? key}) : super(key: key);
+  Future<bool> permission() async {
+    Map<Permission, PermissionStatus> status =
+        await [Permission.camera].request(); // [] 권한배열에 권한을 작성
 
-  @override
-  Widget build(BuildContext context) {
-    return Selector<CourseViewModel, List>(
-        selector: (p0, p1) => p1.freeCourse,
-        builder: (context, value, child) {
-          int maxRecNum = vm(context).recommendCourse.length > 10
-              ? 10
-              : vm(context).recommendCourse.length;
-          int maxFreeNum = vm(context).freeCourse.length > 10
-              ? 10
-              : vm(context).freeCourse.length;
-          return value.isEmpty
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-                  children: [
-                    const SizedBox(height: 11),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 11, horizontal: 16),
-                      child: Row(
-                        children: [
-                          const Text(
-                            '추천 과목',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const Spacer(),
-                          InkWell(
-                            onTap: () {},
-                            child: const Text(
-                              '전체 보기',
-                              style: TextStyle(
-                                  color: Color(0xff564EA9),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 200,
-                      child: Selector<CourseViewModel, List>(
-                          selector: (p0, p1) => p1.recommendCourse,
-                          builder: (context, value, child) {
-                            return ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                for (int i = 0; i < maxRecNum; ++i)
-                                  _buildCourseCard(
-                                      vm(context).recommendCourse[i]),
-                              ],
-                            );
-                          }),
-                    ),
-                    const SizedBox(height: 24),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 11, horizontal: 16),
-                      child: Row(
-                        children: [
-                          const Text(
-                            '무료 과목',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const Spacer(),
-                          InkWell(
-                            onTap: () {},
-                            child: const Text(
-                              '전체 보기',
-                              style: TextStyle(
-                                  color: Color(0xff564EA9),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 200,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          for (int i = 0; i < maxFreeNum; ++i)
-                            _buildCourseCard(vm(context).freeCourse[i]),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-        });
-  }
-
-  Widget _buildCourseCard(Map<String, dynamic> course) {
-    List teacher = course['instructors'];
-    String title = course['title'];
-    String? logoUrl = course['logo_file_url'];
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6.5),
-      child: InkWell(
-        onTap: () {},
-        child: Column(
-          children: [
-            Container(
-              width: 160,
-              height: 136,
-              decoration: const BoxDecoration(
-                color: Color(0xff938DD0),
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(8),
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: logoUrl != null
-                          ? Image.network(logoUrl)
-                          : Image.asset('asset/image/course.png'),
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              width: 160,
-              height: 64,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(8),
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      teacher.isEmpty ? '선생님 미등록' : teacher[0]['fullname'],
-                      style: const TextStyle(
-                          color: Color(0xff797a7b),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400),
-                    ),
-                    const SizedBox(height: 6),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: const Color(0xff0078b5),
-                          borderRadius: BorderRadius.circular(2)),
-                      width: 48,
-                      height: 22,
-                      child: const Center(
-                        child: Text(
-                          '오프라인',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    if (await Permission.camera.isGranted) {
+      return Future.value(true);
+    } else {
+      return Future.value(false);
+    }
   }
 }
