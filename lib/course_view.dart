@@ -2,6 +2,7 @@ import 'package:elice/home_view.dart';
 import 'package:elice/viewmodel_provider_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
@@ -20,7 +21,7 @@ class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
               : vm(context).freeCourse.length;
           return value.isEmpty
               ? const Center(child: CircularProgressIndicator())
-              : Column(
+              : ListView(
                   children: [
                     const SizedBox(height: 11),
                     Padding(
@@ -38,7 +39,15 @@ class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
                           ),
                           const Spacer(),
                           InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              context.push('/recommendCourse');
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => CourseFreeView(),
+                              //   ),
+                              // );
+                            },
                             child: const Text(
                               '전체 보기',
                               style: TextStyle(
@@ -81,7 +90,9 @@ class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
                           ),
                           const Spacer(),
                           InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              context.push('/freeCourse');
+                            },
                             child: const Text(
                               '전체 보기',
                               style: TextStyle(

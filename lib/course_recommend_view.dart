@@ -1,19 +1,18 @@
 import 'package:elice/base_widget.dart';
 import 'package:elice/course_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class CourseFreeViewModel with ChangeNotifier {
-  CourseFreeViewModel() {
+class CourseRecommendViewModel with ChangeNotifier {
+  CourseRecommendViewModel() {
     init();
   }
 
   final CourseProvider courseProvider = CourseProvider();
   Future init() async {
-    freeCourse = await courseProvider.getFreeCourse();
+    recommendCourse = await courseProvider.getRecommendCourse();
     scrollController.addListener(() {
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
@@ -28,26 +27,28 @@ class CourseFreeViewModel with ChangeNotifier {
   ScrollController scrollController = ScrollController();
 
   void onRefresh() async {
-    freeCourse = await courseProvider.getMoreFreeCourse(freeCourse.length + 10);
+    recommendCourse = await courseProvider
+        .getMoreRecommendCourse(recommendCourse.length + 10);
     refreshController.refreshCompleted();
     notifyListeners();
   }
 
   void onLoading() async {
-    freeCourse = await courseProvider.getMoreFreeCourse(freeCourse.length + 10);
-    refreshController.refreshCompleted();
+    recommendCourse = await courseProvider
+        .getMoreRecommendCourse(recommendCourse.length + 10);
+    refreshController.loadComplete();
     notifyListeners();
   }
 
-  late List freeCourse = [];
+  late List recommendCourse = [];
 }
 
-class CourseFreeView extends BaseView<CourseFreeViewModel> {
-  CourseFreeView({Key? key}) : super(key: key);
+class CourseRecommendView extends BaseView<CourseRecommendViewModel> {
+  CourseRecommendView({Key? key}) : super(key: key);
 
   @override
-  CourseFreeViewModel createViewModel(BuildContext context) =>
-      CourseFreeViewModel();
+  CourseRecommendViewModel createViewModel(BuildContext context) =>
+      CourseRecommendViewModel();
 
   @override
   PreferredSizeWidget? appBar(BuildContext context) {
@@ -60,7 +61,7 @@ class CourseFreeView extends BaseView<CourseFreeViewModel> {
         onPressed: () => Navigator.pop(context),
       ),
       title: const Text(
-        '무료 과목',
+        '추천 과목',
         style: TextStyle(
             color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
       ),
@@ -70,8 +71,8 @@ class CourseFreeView extends BaseView<CourseFreeViewModel> {
 
   @override
   Widget buildBody(BuildContext context) {
-    return Selector<CourseFreeViewModel, List>(
-        selector: (p0, p1) => p1.freeCourse,
+    return Selector<CourseRecommendViewModel, List>(
+        selector: (p0, p1) => p1.recommendCourse,
         builder: (context, value, child) {
           return SmartRefresher(
             controller: vm(context).refreshController,
@@ -83,9 +84,10 @@ class CourseFreeView extends BaseView<CourseFreeViewModel> {
             child: Container(
               child: ListView.builder(
                 controller: vm(context).scrollController,
-                itemCount: vm(context).freeCourse.length,
-                itemBuilder: (_, int idx) {
-                  return _buildCourseCard(context, vm(context).freeCourse[idx]);
+                itemCount: vm(context).recommendCourse.length,
+                itemBuilder: (_, idx) {
+                  return _buildCourseCard(
+                      context, vm(context).recommendCourse[idx]);
                 },
               ),
             ),

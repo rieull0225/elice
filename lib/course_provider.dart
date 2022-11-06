@@ -8,7 +8,19 @@ class CourseProvider {
     late CourseStat courseStat;
     late List course;
     const baseUrl =
-        'https://api-rest.elice.io/org/academy/course/list/?filter_is_free=false&filter_is_recommended=true&offset=0&count=10';
+        'https://api-rest.elice.io/org/academy/course/list/?filter_is_free=false&filter_is_recommended=true&offset=0&count=20';
+    http.Response response = await http
+        .get(Uri.parse(baseUrl), headers: {"Accept": "application/json"});
+    if (response.statusCode == 200) {
+      course = jsonDecode(response.body)['courses'];
+    }
+    return course;
+  }
+
+  Future<List> getMoreRecommendCourse(int count) async {
+    late List course;
+    final baseUrl =
+        'https://api-rest.elice.io/org/academy/course/list/?filter_is_free=false&filter_is_recommended=true&offset=0&count=$count';
     http.Response response = await http
         .get(Uri.parse(baseUrl), headers: {"Accept": "application/json"});
     if (response.statusCode == 200) {
@@ -22,6 +34,19 @@ class CourseProvider {
     late List course;
     const baseUrl =
         'https://api-rest.elice.io/org/academy/course/list/?filter_is_free=true&filter_is_recommended=false&offset=0&count=10 ';
+    http.Response response = await http
+        .get(Uri.parse(baseUrl), headers: {"Accept": "application/json"});
+    if (response.statusCode == 200) {
+      course = jsonDecode(response.body)['courses'];
+    }
+    return course;
+  }
+
+  Future<List> getMoreFreeCourse(int count) async {
+    late CourseStat courseStat;
+    late List course;
+    final baseUrl =
+        'https://api-rest.elice.io/org/academy/course/list/?filter_is_free=true&filter_is_recommended=false&offset=0&count=$count';
     http.Response response = await http
         .get(Uri.parse(baseUrl), headers: {"Accept": "application/json"});
     if (response.statusCode == 200) {

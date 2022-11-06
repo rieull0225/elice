@@ -54,6 +54,7 @@ class HomeView extends BaseView<CourseViewModel> {
     return AppBar(
       foregroundColor: Colors.white,
       backgroundColor: Colors.white,
+      centerTitle: true,
       elevation: 0,
       title: Selector<CourseViewModel, int>(
           selector: (p0, p1) => p1.index,

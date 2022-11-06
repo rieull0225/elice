@@ -50,7 +50,7 @@ class _QrReaderState extends State<QrReader> {
     }
   }
 
-  _decoder(String encoding) {
+  String _decoder(String encoding) {
     var decoded = base64.decode(encoding);
     return utf8.decode(decoded);
   }
