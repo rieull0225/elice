@@ -89,12 +89,16 @@ class HomeView extends BaseView<CourseViewModel> {
               items: [
                 BottomNavigationBarItem(
                   icon: Padding(
-                    padding: const EdgeInsets.only(bottom: 5.89),
+                    padding: EdgeInsets.only(bottom: 5.89),
                     child: SizedBox(
-                        width: 19,
-                        child: vm(context).index == 0
-                            ? Image.asset('asset/image/course_icon.png')
-                            : Image.asset('asset/image/course_inactive.png')),
+                      width: 19,
+                      child: Icon(
+                        Icons.account_balance,
+                        color: vm(context).index == 0
+                            ? Color(0xff524aa1)
+                            : Color(0xff8d8a8a),
+                      ),
+                    ),
                   ),
                   label: 'Home',
                 ),
@@ -102,10 +106,14 @@ class HomeView extends BaseView<CourseViewModel> {
                   icon: Padding(
                     padding: const EdgeInsets.only(bottom: 6.75),
                     child: SizedBox(
-                        width: 19,
-                        child: vm(context).index == 1
-                            ? Image.asset('asset/image/qr_icon.png')
-                            : Image.asset('asset/image/qr_inactive.png')),
+                      width: 19,
+                      child: Icon(
+                        Icons.camera_alt,
+                        color: vm(context).index == 1
+                            ? Color(0xff524aa1)
+                            : Color(0xff8d8a8a),
+                      ),
+                    ),
                   ),
                   label: 'QR',
                 ),
