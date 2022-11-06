@@ -1,4 +1,5 @@
 import 'package:elice/base_widget.dart';
+import 'package:elice/course_provider.dart';
 import 'package:elice/qr_view.dart';
 import 'package:elice/viewmodel_provider_mixin.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,19 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class CourseViewModel with ChangeNotifier {
-  CourseViewModel();
+  CourseViewModel() {
+    init();
+  }
+
+  CourseProvider courseProvider = CourseProvider();
+
+  Future init() async {
+    recommendCourse = await courseProvider.getRecommendCourse();
+    freeCourse = await courseProvider.getFreeCourse();
+  }
+
+  late List recommendCourse;
+  late List freeCourse;
 
   int _index = 0;
 
@@ -29,7 +42,7 @@ class CourseViewModel with ChangeNotifier {
 }
 
 class HomeView extends BaseView<CourseViewModel> {
-  const HomeView({Key? key}) : super(key: key);
+  HomeView({Key? key}) : super(key: key);
 
   @override
   CourseViewModel createViewModel(BuildContext context) => CourseViewModel();
@@ -102,173 +115,192 @@ class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 11),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
-          child: Row(
-            children: const [
-              Text(
-                '추천 과목',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              Spacer(),
-              Text(
-                '전체 보기',
-                style: TextStyle(
-                    color: Color(0xff564EA9),
-                    fontSize: 10,
-                    fontWeight: FontWeight.w400),
-              )
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 200,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
+    int maxRecNum = vm(context).recommendCourse.length > 10
+        ? 10
+        : vm(context).recommendCourse.length;
+    int maxFreeNum =
+        vm(context).freeCourse.length > 10 ? 10 : vm(context).freeCourse.length;
+    return Selector<CourseViewModel, List>(
+        selector: (p0, p1) => p1.recommendCourse,
+        builder: (context, value, child) {
+          return Column(
             children: [
-              _buildCourseCard(),
-              _buildCourseCard(),
-              _buildCourseCard(),
-              _buildCourseCard(),
-              _buildCourseCard(),
-              _buildCourseCard()
-            ],
-          ),
-        ),
-        const SizedBox(height: 24),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
-          child: Row(
-            children: const [
-              Text(
-                '무료 과목',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              Spacer(),
-              Text(
-                '전체 보기',
-                style: TextStyle(
-                    color: Color(0xff564EA9),
-                    fontSize: 10,
-                    fontWeight: FontWeight.w400),
-              )
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 200,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              _buildCourseCard(),
-              _buildCourseCard(),
-              _buildCourseCard(),
-              _buildCourseCard(),
-              _buildCourseCard(),
-              _buildCourseCard()
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCourseCard() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6.5),
-      child: Column(
-        children: [
-          Container(
-            width: 160,
-            height: 136,
-            decoration: const BoxDecoration(
-              color: Color(0xff938DD0),
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(8),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Image.asset('asset/image/course.png'),
-                  ),
-                  const SizedBox(height: 14),
-                  const Text(
-                    '캐글 문제 풀이로 배우는 데이터 분석',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700),
-                  )
-                ],
-              ),
-            ),
-          ),
-          Container(
-            width: 160,
-            height: 64,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(8),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '유준배 선생님',
-                    style: TextStyle(
-                        color: Color(0xff797a7b),
+              const SizedBox(height: 11),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
+                child: Row(
+                  children: [
+                    Text(
+                      '추천 과목',
+                      style: TextStyle(
+                        color: Colors.black,
                         fontSize: 12,
-                        fontWeight: FontWeight.w400),
-                  ),
-                  const SizedBox(height: 6),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: Color(0xff0078b5),
-                        borderRadius: BorderRadius.circular(2)),
-                    width: 48,
-                    height: 22,
-                    child: const Center(
-                      child: Text(
-                        '오프라인',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700),
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                  )
-                ],
+                    Spacer(),
+                    InkWell(
+                      onTap: () {},
+                      child: Text(
+                        '전체 보기',
+                        style: TextStyle(
+                            color: Color(0xff564EA9),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 200,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    for (int i = 0; i < maxRecNum; ++i)
+                      _buildCourseCard(vm(context).recommendCourse[i]),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
+                child: Row(
+                  children: [
+                    const Text(
+                      '무료 과목',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Spacer(),
+                    InkWell(
+                      onTap: () {},
+                      child: const Text(
+                        '전체 보기',
+                        style: TextStyle(
+                            color: Color(0xff564EA9),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 200,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    for (int i = 0; i < maxFreeNum; ++i)
+                      _buildCourseCard(vm(context).freeCourse[i]),
+                  ],
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+  Widget _buildCourseCard(Map<String, dynamic> course) {
+    List teacher = course['instructors'];
+    String title = course['title'];
+    String? logoUrl = course['logo_file_url'];
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6.5),
+      child: InkWell(
+        onTap: () {},
+        child: Column(
+          children: [
+            Container(
+              width: 160,
+              height: 136,
+              decoration: const BoxDecoration(
+                color: Color(0xff938DD0),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(8),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: logoUrl != null
+                          ? Image.network(logoUrl)
+                          : Image.asset('asset/image/course.png'),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+            Container(
+              width: 160,
+              height: 64,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(8),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      teacher.isEmpty ? '선생님 미등록' : teacher[0]['fullname'],
+                      style: TextStyle(
+                          color: Color(0xff797a7b),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: const Color(0xff0078b5),
+                          borderRadius: BorderRadius.circular(2)),
+                      width: 48,
+                      height: 22,
+                      child: const Center(
+                        child: Text(
+                          '오프라인',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
