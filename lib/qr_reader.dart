@@ -18,13 +18,18 @@ class _QrReaderState extends State<QrReader> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-          width: 200,
-          height: 200,
-          child: QRView(
-            key: qrKey,
-            onQRViewCreated: _onQRViewCreated,
-          )),
+      child: Column(
+        children: [
+          Container(
+            width: 400,
+            height: 400,
+            child: QRView(
+              key: qrKey,
+              onQRViewCreated: _onQRViewCreated,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

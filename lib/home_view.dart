@@ -1,4 +1,5 @@
 import 'package:elice/base_widget.dart';
+import 'package:elice/chage_theme_button.dart';
 import 'package:elice/course_provider.dart';
 import 'package:elice/course_view.dart';
 import 'package:elice/qr_view.dart';
@@ -32,6 +33,15 @@ class CourseViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  bool _isQrPressed = false;
+
+  bool get isQrPressed => _isQrPressed;
+
+  set isQrPressed(value) {
+    _isQrPressed = value;
+    notifyListeners();
+  }
+
   void tapIndex(int idx) {
     index = idx;
     notifyListeners();
@@ -52,26 +62,21 @@ class HomeView extends BaseView<CourseViewModel> {
   @override
   PreferredSizeWidget? appBar(BuildContext context) {
     return AppBar(
-      foregroundColor: Colors.white,
-      backgroundColor: Colors.white,
       centerTitle: true,
       elevation: 0,
       title: Selector<CourseViewModel, int>(
           selector: (p0, p1) => p1.index,
           builder: (context, value, child) {
             return value == 0
-                ? SizedBox(
-                    width: 108, child: Image.asset('asset/image/logo.png'))
+                ? Text(
+                    'Change Theme Button',
+                  )
                 : Text(
                     'QR',
-                    style: TextStyle(color: Colors.black),
                   );
           }),
       actions: [
-        IconButton(
-            onPressed: () {},
-            icon: SizedBox(
-                height: 20, child: Image.asset('asset/image/noti.png')))
+        ChangeThemeButton(),
       ],
     );
   }

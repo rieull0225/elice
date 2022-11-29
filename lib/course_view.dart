@@ -1,4 +1,6 @@
+import 'package:elice/change_font_button.dart';
 import 'package:elice/home_view.dart';
+import 'package:elice/theme_provider.dart';
 import 'package:elice/viewmodel_provider_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -32,7 +34,6 @@ class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
                           const Text(
                             '추천 과목',
                             style: TextStyle(
-                              color: Colors.black,
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
                             ),
@@ -51,7 +52,6 @@ class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
                             child: const Text(
                               '전체 보기',
                               style: TextStyle(
-                                  color: Color(0xff564EA9),
                                   fontSize: 10,
                                   fontWeight: FontWeight.w400),
                             ),
@@ -83,7 +83,6 @@ class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
                           const Text(
                             '무료 과목',
                             style: TextStyle(
-                              color: Colors.black,
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
                             ),
@@ -96,9 +95,7 @@ class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
                             child: const Text(
                               '전체 보기',
                               style: TextStyle(
-                                  color: Color(0xff564EA9),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w400),
+                                  fontSize: 10, fontWeight: FontWeight.w400),
                             ),
                           )
                         ],
@@ -114,6 +111,17 @@ class CourseView extends StatelessWidget with ViewModelMixin<CourseViewModel> {
                         ],
                       ),
                     ),
+                    Column(
+                      children: [
+                        IncreaseFontButton(),
+                        DecreaseFontButton(),
+                        Selector<ThemeProvider, double>(
+                            selector: (p0, p1) => p1.fontScale,
+                            builder: (_, value, child) {
+                              return Text('fontSize : $value');
+                            })
+                      ],
+                    )
                   ],
                 );
         });
