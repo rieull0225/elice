@@ -1,30 +1,36 @@
-# elice team mini project
+# 체인라이트닝 team mini project
 
-엘리스코딩 미니프로젝트입니다.
-11월 6일 저녁 11시경에 시작하여 11월 7일 오전 2시에 마감합니다.
+체인라이트닝 미니프로젝트입니다.
+총 소요시간은 6시간 정도입니다.
+기존의 있던 프로젝트를 수정한 형태입니다.
 
 ## 구조 및 코딩방식
 
-- Clean Architecture를 사용하여, Entitiy, Repository, Controller를 분리하였습니다.
-- MVVM 패턴을 사용해 Model, View, ViewModel을 나누었습니다.
-- 크게 세 가지 기능으로 나누어진다고 판단, 기능별로 코드를 완성하였습니다.
-- UI, UX를 먼저 완성하고 그 이후에 API Call을 하는 방식으로 해결했습니다.
+## 요구 조건
 
-- 사용한 Package는 다음과 같습니다. 
-- provider : 상태관리를 위해 사용하였습니다. 완성한 이후에 요구조건의 BloC을 사용하라는 문구를 발견하여 수정하지 못했습니다.
-- lint : lint 입니다.
-- http : api call을 위한 http입니다.
-- qr_code_scanner : QR스캔을 위한 QR스캐너입니다.
-- permission_handler : 카메라 접근권한을 위해 사용했습니다.
-- url_launcher : QR로 스캔한 이후, url을 가지고 WebView를 쏴주기 위해 사용했습니다.
-- go_router : 내장 Navigator를 사용하려다가 parameter전달을 편하게 하기 위해 사용했는데, 설계가 바뀌어 크게 사용하지 않았습니다.
-- pull_to_refresh : 편하다고 해서 한번 써봤는데 잘 모르겠습니다.
+- 플랫폼 (iOS, Android) 별 고유한 스타일을 적용할 수 있어야합니다.
+- 시스템 설정 또는 사용자 설정에 따라 다크모드 UI를 지원할 수 있어야합니다.
+- 시스템 설정 또는 사용자 설정에 따라 UI 폰트 크기를 지정할 수 있어야합니다.
+- 스캐너 버튼을 long-press 하면 카메라 컨트롤러가 실행되고, 손을 떼면 종료되어야합니다.
+- 실행된 카메라 컨트롤러를 통해 QR코드 인식이 가능해야합니다.
+- QR 코드 오인식을 방지하기 위해 화면의 일부 영역만 스캔 인식 영역으로 지정할 수 있어야합니다.
 
-- commit message는 상용되는 commit message rule을 참고하였습니다.
+## 과제
 
+- 위 요구 조건의 전부 (또는 일부)를 자유로운 방식으로 설계 및 구현 해 주세요.
+- README 또는 기타 문서도구를 이용하여 프로젝트에 필요한 Documentation 을 기재해주세요.
+- 소스코드는 다음 중 더 편한 방식으로 제출 해 주세요:
+    - repo URL을 제출 or
+    - `.git` 폴더를 포함하여 zip 압축하여 제출
+- 빌드된 결과물을 확인할 수 있도록 다음 중 편한 방식으로 제출해주세요:
+    - 빌드 결과물을 영상 촬영하여 제출
+    - TestFlight 또는 Google Play Test Release 에 초대하는 방식으로 제출
+    - 로컬에서 빌드하여 확인할 수 있도록 문서화하여 제출 않습니다.
 
-- HomeView의 수업 카드에 InkWell을 입혀놓았으나 onTap의 액션이 결정되지 않아 touch animation이 출력되지 않는 경우가 있습니다.
-- QR Scanner가 QR 코드를 읽는데 3~5초의 시간이 걸립니다.
-- 전체보기에서 위로 당기면 새로고침이 되고 아래로 당기면 새로운 item이 추가가 됩니다. 애니메이션은 추가하지 않았습니다.
-- Free course에서 instructor의 이름이 비정상적으로 긴 경우가 있었으나 확인 결과 통상 20자까지는 overflow가 일어나지 않아 예외처리 하지 않았습니다.
-- 전체보기의 카드 또한 InkWell을 입혀놓았으나 touch animation이 출력되지 않습니다.
+## 구동방식
+- 별도의 구동방식은 없습니다. build 혹은 제출한 .apk파일을 실행시켜주시기 바랍니다.
+- 카메라 권한이 필요합니다.
+- AppBar의 Swtich를 통해 light mode 와 dark mode를 toggle할 수 있습니다.
+- Bottom Navigation Bar를 통해서 QR Scanner로 이동할 수 있습니다.
+- TextButton을 길게 눌러 QR스캐너를 실행할 수 있습니다.
+- 일부 기기에서 QR스캐너가 까만화면으로 구동되는 경우가 있습니다. 이 경우 까만 화면을 한번 터치하면 정상적으로 작동합니다.
